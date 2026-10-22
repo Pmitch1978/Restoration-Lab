@@ -1,0 +1,6 @@
+numpy>=1.24,<3
+scipy>=1.10,<2
+soundfile>=0.13.1,<1
+PyWavelets>=1.5,<2
+sounddevice>=0.4.6,<1
+Pillow>=10,<13

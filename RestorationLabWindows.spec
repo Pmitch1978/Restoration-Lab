@@ -1,0 +1,25 @@
+# Build on Windows with Python 3.13 x64.
+from PyInstaller.utils.hooks import collect_all
+from pathlib import Path
+
+assets=Path(SPECPATH)/'assets'
+datas = [(str(assets/'RestorationLab.png'),'assets'),
+         (str(assets/'User_Guide.html'),'assets'),
+         (str(Path(SPECPATH)/'test_assets'/'decoder_check.mp3'),'test_assets')]
+binaries, hiddenimports = [], []
+for package in ('sounddevice', '_sounddevice_data', 'soundfile', '_soundfile_data', 'pywt'):
+    d, b, h = collect_all(package)
+    datas += d
+    binaries += b
+    hiddenimports += h
+
+a = Analysis(['windows_entry.py'], pathex=[SPECPATH], binaries=binaries,
+             datas=datas, hiddenimports=hiddenimports, hookspath=[],
+             runtime_hooks=[], excludes=[], noarchive=False)
+pyz = PYZ(a.pure)
+exe = EXE(pyz, a.scripts, [], exclude_binaries=True,
+          name='Restoration Lab', debug=False, bootloader_ignore_signals=False,
+          strip=False, upx=False, console=False, icon=str(assets/'RestorationLab.ico'), argv_emulation=False,
+          target_arch=None, codesign_identity=None, entitlements_file=None)
+coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False,
+               name='Restoration Lab')
