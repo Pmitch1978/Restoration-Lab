@@ -1,0 +1,52 @@
+test_missing_mp3_decoder_has_actionable_error (test_audio_input.InputTests.test_missing_mp3_decoder_has_actionable_error) ... ok
+test_mp3_restore_and_wav_export (test_audio_input.InputTests.test_mp3_restore_and_wav_export) ... ok
+test_wav_exact_and_input_validation (test_audio_input.InputTests.test_wav_exact_and_input_validation) ... ok
+test_artwork_all_views_and_empty_session (test_gui.GuiTests.test_artwork_all_views_and_empty_session) ... ok
+test_control_mapping_and_lossless_bypass_restore (test_gui.GuiTests.test_control_mapping_and_lossless_bypass_restore) ... ok
+test_knob_clamping_and_keyboard (test_gui.GuiTests.test_knob_clamping_and_keyboard) ... ok
+test_master_nr_slider_scales_amounts_and_zero_bypasses (test_gui.GuiTests.test_master_nr_slider_scales_amounts_and_zero_bypasses) ... ok
+test_eight_distinct_preset_curves_at_full_strength (test_mastering.MasteringTests.test_eight_distinct_preset_curves_at_full_strength) ... ok
+test_preset_selection_enables_mastering_and_preserves_monitor_switches (test_mastering.MasteringTests.test_preset_selection_enables_mastering_and_preserves_monitor_switches) ... ok
+test_zero_strength_converges_and_unmastered_bypasses (test_mastering.MasteringTests.test_zero_strength_converges_and_unmastered_bypasses) ... ok
+test_advanced_controls_and_bypass_preserve_settings (test_multiband_loudness.MasterUpgradeTests.test_advanced_controls_and_bypass_preserve_settings) ... ok
+test_budget_warns_when_target_is_unreachable (test_multiband_loudness.MasterUpgradeTests.test_budget_warns_when_target_is_unreachable) ... ok
+test_encoded_export_and_monitor_settings_do_not_leak (test_multiband_loudness.MasterUpgradeTests.test_encoded_export_and_monitor_settings_do_not_leak) ... ok
+test_live_loudness_agrees_with_offline (test_multiband_loudness.MasterUpgradeTests.test_live_loudness_agrees_with_offline) ... ok
+test_low_band_compression_preserves_high_band (test_multiband_loudness.MasterUpgradeTests.test_low_band_compression_preserves_high_band) ... ok
+test_peak_limiting_chunk_boundary_and_mono_44100 (test_multiband_loudness.MasterUpgradeTests.test_peak_limiting_chunk_boundary_and_mono_44100) ... ok
+test_silence_short_and_invalid_controls (test_multiband_loudness.MasterUpgradeTests.test_silence_short_and_invalid_controls) ... ok
+test_stream_partition_independence (test_multiband_loudness.MasterUpgradeTests.test_stream_partition_independence) ... ok
+test_target_and_oversampled_peak_with_intersample_content (test_multiband_loudness.MasterUpgradeTests.test_target_and_oversampled_peak_with_intersample_content) ... ok
+test_unity_crossover_recombination_flat_magnitude (test_multiband_loudness.MasterUpgradeTests.test_unity_crossover_recombination_flat_magnitude) ... ok
+test_actual_app_callback_and_eof (test_realtime.RealtimeTests.test_actual_app_callback_and_eof) ... ok
+test_amount_changes_actual_processing_not_cached_mix (test_realtime.RealtimeTests.test_amount_changes_actual_processing_not_cached_mix) ... ok
+test_mono_export_and_zero_signal (test_realtime.RealtimeTests.test_mono_export_and_zero_signal) ... ok
+test_streamed_stft_agrees_with_offline_reference (test_realtime.RealtimeTests.test_streamed_stft_agrees_with_offline_reference) ... ok
+test_streamed_wavelet_agrees_with_reference_and_stable_edges (test_realtime.RealtimeTests.test_streamed_wavelet_agrees_with_reference_and_stable_edges) ... ok
+test_transport_modes_seek_and_exact_sample_count (test_realtime.RealtimeTests.test_transport_modes_seek_and_exact_sample_count) ... ok
+test_worker_errors_are_reported (test_realtime.RealtimeTests.test_worker_errors_are_reported) ... ok
+test_crossovers_clamp_to_valid_spacing (test_studio_ui.MetalStudioTests.test_crossovers_clamp_to_valid_spacing) ... ok
+test_numeric_edit_routes_to_eq_and_stereo (test_studio_ui.MetalStudioTests.test_numeric_edit_routes_to_eq_and_stereo) ... ok
+test_three_pages_and_shared_controls (test_studio_ui.MetalStudioTests.test_three_pages_and_shared_controls) ... ok
+test_float_headroom_and_full_length_exports (test_v2.Version2Tests.test_float_headroom_and_full_length_exports) ... ok
+test_focus_selects_removed_signal (test_v2.Version2Tests.test_focus_selects_removed_signal) ... ok
+test_grain_and_zero_bypass (test_v2.Version2Tests.test_grain_and_zero_bypass) ... ok
+test_loop_repeats_and_keeps_dry_alignment (test_v2.Version2Tests.test_loop_repeats_and_keeps_dry_alignment) ... ok
+test_targeting_block_stability_and_stereo (test_v2.Version2Tests.test_targeting_block_stability_and_stereo) ... ok
+test_float_source_selects_float_export_default (test_v2_controls.Controls2Tests.test_float_source_selects_float_export_default) ... ok
+test_loop_point_constraints_toggle_and_clear (test_v2_controls.Controls2Tests.test_loop_point_constraints_toggle_and_clear) ... ok
+test_new_controls_and_monitor_switch_do_not_change_processing (test_v2_controls.Controls2Tests.test_new_controls_and_monitor_switch_do_not_change_processing) ... ok
+test_attack_release_and_soft_knee (test_v3_studio.StudioTests.test_attack_release_and_soft_knee) ... ok
+test_bass_protection_retains_low_width (test_v3_studio.StudioTests.test_bass_protection_retains_low_width) ... ok
+test_eq_gain_and_cut (test_v3_studio.StudioTests.test_eq_gain_and_cut) ... ok
+test_export_ignores_auditions_preserves_stereo_and_rate (test_v3_studio.StudioTests.test_export_ignores_auditions_preserves_stereo_and_rate) ... ok
+test_four_band_recombination (test_v3_studio.StudioTests.test_four_band_recombination) ... ok
+test_invalid_values (test_v3_studio.StudioTests.test_invalid_values) ... ok
+test_linked_stereo_and_streaming (test_v3_studio.StudioTests.test_linked_stereo_and_streaming) ... ok
+test_preset_json_and_export_report_serializable (test_v3_studio.StudioTests.test_preset_json_and_export_report_serializable) ... ok
+test_width_preserves_mid_and_default_is_identity (test_v3_studio.StudioTests.test_width_preserves_mid_and_default_is_identity) ... ok
+
+----------------------------------------------------------------------
+Ran 47 tests in 37.308s
+
+OK

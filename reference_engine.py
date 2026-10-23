@@ -128,10 +128,24 @@ def wavelet(x, sr, progress=lambda message: None):
 
 
 @dataclass(frozen=True)
+class EQBand:
+    kind: str = 'bell'
+    frequency: float = 1000.
+    gain: float = 0.
+    q: float = .707
+    enabled: bool = True
+
+
+@dataclass(frozen=True)
 class Controls:
     mode: str = 'Wavelet'
     spectral_amount: float = 1.
     wavelet_amount: float = 1.
+    grain: float = .5
+    focus: bool = False
+    frequency: float = 6300.
+    width: float = 1.5
+    preview_original: bool = False
     master: bool = False
     match: bool = True
     removed: bool = False
@@ -141,6 +155,57 @@ class Controls:
     strength: float = .5
     output_db: float = 0.
     preset: str = 'Natural'
+    multiband: bool = True
+    crossover_low: float = 200.
+    crossover_high: float = 4000.
+    low_threshold: float = -18.
+    mid_threshold: float = -18.
+    high_threshold: float = -18.
+    low_ratio: float = 2.
+    mid_ratio: float = 2.
+    high_ratio: float = 2.
+    loudness_target: bool = True
+    target_lufs: float = -14.
+    ceiling_dbtp: float = -1.
+    max_limiting_db: float = 6.
+    crossover_mid: float = 1000.
+    eq_enabled: bool = True
+    eq_bands: tuple = (EQBand('highpass',30.,0.,.707,False),
+        EQBand('low_shelf',120.), EQBand('bell',400.),
+        EQBand('bell',2500.), EQBand('high_shelf',8000.),
+        EQBand('lowpass',18000.,0.,.707,False))
+    stereo_enabled: bool = True
+    stereo_width: float = 1.
+    bass_protect: bool = True
+    bass_protect_hz: float = 120.
+    mono_audition: bool = False
+    low_attack: float = 20.0
+    low_release: float = 150.0
+    low_knee: float = 6.0
+    low_makeup: float = 0.0
+    low_bypass: bool = False
+    low_solo: bool = False
+    lowmid_threshold: float = -18.
+    lowmid_ratio: float = 2.
+    lowmid_attack: float = 20.0
+    lowmid_release: float = 150.0
+    lowmid_knee: float = 6.0
+    lowmid_makeup: float = 0.0
+    lowmid_bypass: bool = False
+    lowmid_solo: bool = False
+    mid_attack: float = 20.0
+    mid_release: float = 150.0
+    mid_knee: float = 6.0
+    mid_makeup: float = 0.0
+    mid_bypass: bool = False
+    mid_solo: bool = False
+    high_attack: float = 20.0
+    high_release: float = 150.0
+    high_knee: float = 6.0
+    high_makeup: float = 0.0
+    high_bypass: bool = False
+    high_solo: bool = False
+
 
 
 class Restoration:
@@ -227,11 +292,17 @@ def eq_sos(sr, bass, mid, treble):
 
 
 class Mastering:
-    """POC: three-band EQ, linked RMS compressor, sample-peak safety limiter.
+    """Four-band linked dynamics, six-band EQ, stereo width and live metering.
 
-    Not a certified loudness meter or true-peak limiter. No added makeup gain.
+    Live sample ceiling; oversampled true-peak and LUFS finalization at export.
     """
     def __init__(self, sr, channels):
+        from mastering_tools import Multiband, LiveLoudness
+        from studio_tools import ParametricEQ, StereoWidth
+        self.bands = Multiband(sr, channels)
+        self.eq = ParametricEQ(sr, channels)
+        self.stereo = StereoWidth(sr, channels)
+        self.loudness = LiveLoudness(sr, channels)
         self.sr, self.channels = sr, channels
         self.zi = np.zeros((3, 2, channels))
         self.env = np.zeros(1)
@@ -241,29 +312,27 @@ class Mastering:
         self.previous = None
         self.meters = {}
 
-    def process(self, raw, c):
+    def process(self, raw, c, finalizing=False):
         pb, pm, pt, ratio = PRESETS[c.preset]
         key = (c.bass + pb*c.strength, c.mid + pm*c.strength,
                c.treble + pt*c.strength)
         if key != self.key:
             self.sos = eq_sos(self.sr, *key)
             self.key = key
-        y, self.zi = signal.sosfilt(self.sos, raw, axis=0, zi=self.zi)
-        pole = np.exp(-1/(.020*self.sr))
-        power, self.env = signal.lfilter([1-pole], [1, -pole],
-            np.mean(y*y, axis=1), zi=self.env)
-        level = 10*np.log10(np.maximum(power, 1e-20))
-        effective_ratio = 1+(ratio-1)*c.strength
-        reduction = np.maximum(level+18., 0.)*(1-1/effective_ratio)
-        gain = 10**(-reduction/20)
-        y *= gain[:, None]
+        y, band_reduction = self.bands.process(self.eq.process(raw,c),c,
+            (key[0],key[1],key[1],key[2]),ratio)
+        reduction=np.array(band_reduction)
+        y = self.stereo.process(y,c)
         # Output level ramps over each audio block as controls move.
         target = 10**(c.output_db/20)
         y *= np.linspace(self.last_gain, target, len(y))[:, None]
         self.last_gain = target
-        ceiling = 10**(-1/20)
+        ceiling = 10**(c.ceiling_dbtp/20)
         limiting = np.minimum(1., ceiling/np.maximum(np.max(np.abs(y), axis=1), 1e-15))
-        y *= limiting[:, None]
+        if not finalizing:
+            y *= limiting[:, None]
+        else:
+            limiting = np.ones(len(y))
         matched = y
         if c.match:
             r0, r1 = np.mean(raw**2), np.mean(y**2)
@@ -278,33 +347,14 @@ class Mastering:
             other = raw if c.master else matched
             out = other*(1-ramp)+out*ramp
         self.previous = c.master
-        self.meters = {'compression_db': float(np.max(reduction)),
+        self.meters = {'band_reduction_db': band_reduction, 'compression_db': float(np.max(reduction)),
                        'limiting_db': -db(np.min(limiting)),
-                       'peak_dbfs': db(np.max(np.abs(out)))}
+                       'peak_dbfs': db(np.max(np.abs(out))),
+                       'correlation': self.stereo.correlation}
         return out
 
 
 def export_audio(restoration, path, controls, progress=lambda message: None):
-    """Export full length. Matching/removed monitor modes never enter export."""
-    import soundfile as sf
-    from dataclasses import replace
-    c = replace(controls, match=False, removed=False)
-    master = Mastering(restoration.sr, restoration.source.shape[1])
-    peak = 0.
-    with sf.SoundFile(path, 'w', samplerate=restoration.sr,
-                      channels=restoration.source.shape[1], subtype='PCM_24') as output:
-        for start in range(0, len(restoration.source), 2048):
-            stop = min(start+2048, len(restoration.source))
-            raw = restoration.get(start, stop, c)
-            y = master.process(raw, c) if c.master else raw
-            if not np.isfinite(y).all():
-                raise ValueError('Non-finite export samples')
-            peak = max(peak, float(np.max(np.abs(y))))
-            # Refuse PCM clipping instead of silently clipping the file.
-            if peak >= 1.:
-                raise ValueError('Output exceeds PCM headroom. Lower output or enable mastering.')
-            output.write(y)
-            progress(stop/len(restoration.source))
-    return {'frames': len(restoration.source), 'sample_peak_dbfs': db(peak),
-            'mastered': c.master, 'true_peak_verified': False,
-            'monitor_loudness_match_exported': False}
+    """Use the same mastering/export finalizer as the realtime engine."""
+    from realtime import export_audio as render
+    return render(restoration,path,controls,progress)

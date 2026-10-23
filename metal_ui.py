@@ -10,7 +10,7 @@ import os
 import numpy as np
 from PIL import Image, ImageDraw, ImageFont
 
-WIDTH, HEIGHT = 1280, 740
+WIDTH, HEIGHT = 1440, 1020
 WHITE = '#f0f2f2'
 MUTED = '#9ca6a9'
 TEAL = '#40d2c5'
@@ -56,49 +56,45 @@ def metal(size, dark=False):
 
 
 BUTTONS = {
-    'guide': (870, 23, 128, 34, 'USER GUIDE'),
-    'open': (1010, 23, 108, 34, 'LOAD AUDIO'),
-    'export': (1130, 23, 116, 34, 'EXPORT'),
-    'wave': (48, 92, 132, 24, 'WAVEFORM'),
-    'spectrum': (182, 92, 132, 24, 'SPECTRUM'),
-    'reduction': (316, 92, 132, 24, 'REDUCTION'),
-    'off': (48, 398, 128, 32, 'OFF'),
-    'stft': (187, 398, 128, 32, 'STFT'),
-    'wavelet': (326, 398, 128, 32, 'WAVELET'),
-    'both': (465, 398, 138, 32, 'BOTH'),
-    'drift': (340, 447, 263, 30, 'DRIFT CORRECTION'),
-    'removed': (340, 491, 263, 30, 'LISTEN TO REMOVED'),
-    'profile': (340, 577, 263, 26, 'PROFILE / DETAILS'),
-    'preset': (1070, 370, 158, 26, 'NATURAL   ▾'),
-    'ab': (663, 580, 174, 27, 'A · MASTERING OFF'),
-    'bypass': (847, 580, 154, 27, 'BYPASS ALL'),
-    'match': (1011, 580, 218, 27, 'LEVEL MATCH'),
-    'rewind': (48, 651, 52, 37, 'rewind'),
-    'play': (112, 651, 52, 37, 'play'),
-    'pause': (176, 651, 52, 37, 'pause'),
-    'stop': (240, 651, 52, 37, 'stop'),
+ 'guide':(1010,23,125,34,'USER GUIDE'), 'open':(1145,23,125,34,'LOAD AUDIO'),
+ 'export':(1280,23,125,34,'EXPORT WAV'),
+ 'wave':(48,92,132,24,'WAVEFORM'), 'spectrum':(190,92,132,24,'SPECTRUM'),
+ 'reduction':(332,92,132,24,'REDUCTION'),
+ 'rewind':(48,364,52,38,'rewind'), 'play':(110,364,52,38,'play'),
+ 'pause':(172,364,52,38,'pause'), 'stop':(234,364,52,38,'stop'),
+ 'loop':(580,364,90,38,'LOOP'), 'set_a':(852,364,70,38,'SET A'),
+ 'set_b':(1117,364,70,38,'SET B'), 'clear_loop':(1280,364,100,38,'CLEAR'),
+ 'off':(48,464,124,32,'OFF'), 'stft':(182,464,124,32,'STFT'),
+ 'wavelet':(316,464,124,32,'WAVELET'), 'both':(450,464,158,32,'BOTH'),
+ 'drift':(48,713,265,30,'DRIFT CORRECTION'), 'profile':(329,713,279,30,'PROFILE / DETAILS'),
+ 'focus':(1085,437,140,30,'TARGET BAND'), 'full_range':(1235,437,150,30,'FULL RANGE'),
+ 'advanced':(1235,901,150,28,'MASTERING STUDIO'),
+ 'ab':(48,825,195,30,'MASTERING OFF'), 'preset':(48,870,195,30,'NATURAL'),
+ 'original':(48,954,200,32,'ORIGINAL'), 'processed':(258,954,220,32,'PROCESSED'),
+ 'removed':(560,954,280,32,'LISTEN TO REMOVED'),
+ 'bypass':(860,954,220,32,'BYPASS ALL'), 'match':(1100,954,285,32,'LEVEL MATCH'),
 }
-
 # x, y, width, height, label, low, high, default, units
 KNOBS = {
-    'spectral_amount': (48, 438, 124, 139, 'STFT AMOUNT', 0, 100, 100, '%'),
-    'wavelet_amount': (188, 438, 124, 139, 'WAVELET AMOUNT', 0, 100, 100, '%'),
-    'strength': (653, 438, 116, 139, 'STRENGTH', 0, 100, 50, '%'),
-    'bass': (766, 438, 116, 139, 'BASS', -6, 6, 0, 'dB'),
-    'mid': (876, 438, 116, 139, 'MID', -6, 6, 0, 'dB'),
-    'treble': (986, 438, 116, 139, 'TREBLE', -6, 6, 0, 'dB'),
-    'output_db': (1098, 438, 116, 139, 'OUTPUT', -18, 12, 0, 'dB'),
+ 'spectral_amount':(55,510,150,139,'SPECTRAL',0,100,100,'%'),
+ 'wavelet_amount':(247,510,150,139,'WAVELET',0,100,100,'%'),
+ 'grain':(439,510,150,139,'GRAIN',0,100,50,'%'),
+ 'frequency':(705,611,200,139,'FREQUENCY',20,20000,6300,'Hz'),
+ 'width':(960,611,200,139,'WIDTH',.1,6,1.5,'oct'),
+ 'strength':(300,801,175,139,'STRENGTH',0,100,50,'%'),
+ 'bass':(484,801,175,139,'BASS',-6,6,0,'dB'),
+ 'mid':(668,801,175,139,'MID',-6,6,0,'dB'),
+ 'treble':(852,801,175,139,'TREBLE',-6,6,0,'dB'),
+ 'output_db':(1036,801,175,139,'OUTPUT',-18,12,0,'dB'),
 }
-
-SLIDERS = {
-    'nr_strength': (340, 528, 263, 46, 'NR STRENGTH', 0, 100, 100, '%'),
-}
+SLIDERS = {'nr_strength':(48,666,560,40,'REDUCTION STRENGTH',0,100,100,'%')}
 
 
 class Renderer:
-    plot_rect = (48, 125, 992, 203)
-    meter_rect = (1057, 90, 178, 239)
-    footer_rect = (314, 645, 916, 53)
+    plot_rect = (48, 125, 1152, 203)
+    meter_rect = (1225, 90, 178, 239)
+    footer_rect = (310, 354, 970, 55)
+    focus_rect = (690, 485, 696, 115)
 
     def __init__(self):
         self.base = self.faceplate()
@@ -106,34 +102,25 @@ class Renderer:
         self._wave_image = None
 
     def faceplate(self):
-        im = metal((WIDTH, HEIGHT), dark=True)
-        d = ImageDraw.Draw(im)
-        d.rounded_rectangle((3, 3, 1276, 736), radius=13, outline='#70777b', width=1)
-        d.line((18, 73, 1262, 73), fill='#050707', width=2)
-        d.line((18, 75, 1262, 75), fill='#3f4547')
-        text(d, (40, 35), 'RESTORATION LAB', 29, anchor='lm', bold=True)
-        text(d, (358, 35), 'Version 1.5', 16, anchor='lm')
-        d.line((477, 22, 477, 51), fill='#6b7376')
-        text(d, (495, 29), 'ADAPTIVE RESTORATION', 11)
-        text(d, (495, 45), '& MASTERING', 11, fill=MUTED)
-        for box in [(28, 82, 1252, 342), (28, 358, 625, 615),
-                    (642, 358, 1252, 615), (28, 631, 1252, 706)]:
-            d.rounded_rectangle(box, radius=8, fill='#15191a', outline='#454d50', width=1)
-            d.rounded_rectangle((box[0]+3, box[1]+3, box[2]-3, box[3]-3),
-                                radius=6, outline='#070a0b')
-        d.rounded_rectangle((36, 87, 1244, 336), radius=6, fill=BLACK, outline='#1e3737')
-        text(d, (48, 380), 'R E S T O R A T I O N', 17, anchor='lm', bold=True)
-        d.line((307, 380, 601, 380), fill='#4d5558')
-        text(d, (663, 380), 'M A S T E R I N G', 17, anchor='lm', bold=True)
-        text(d, (1008, 383), 'PRESET', 10, anchor='lm', fill=MUTED)
-        text(d, (48, 597), 'STFT: up to 7 dB   /   Wavelet: up to 2 dB', 10, fill=MUTED)
-        text(d, (48, 697), 'FILE PLAYBACK', 8, fill=MUTED)
-        for x in (16, 1264):
-            for y in (16, 724):
-                d.ellipse((x-7,y-7,x+7,y+7),fill='#070909',outline='#555e62')
-                d.ellipse((x-5,y-5,x+5,y+5),fill='#989fa1',outline='#d6d9d9')
-                d.line((x-3,y-3,x+3,y+3),fill='#303436',width=2)
-                d.line((x-3,y+3,x+3,y-3),fill='#303436',width=2)
+        im=metal((WIDTH,HEIGHT),dark=True)
+        d=ImageDraw.Draw(im)
+        d.rounded_rectangle((3,3,WIDTH-4,HEIGHT-4),radius=12,outline='#596367')
+        text(d,(40,36),'RESTORATION LAB',29,anchor='lm',bold=True)
+        text(d,(365,36),'Version 3.0',17,anchor='lm')
+        text(d,(505,36),'ADAPTIVE RESTORATION & MASTERING',11,fill=MUTED,anchor='lm')
+        for box in [(28,82,1412,342),(28,350,1412,415),(28,425,630,760),
+                    (650,425,1412,760),(28,778,1412,940),(28,947,1412,991)]:
+            d.rounded_rectangle(box,radius=8,fill='#15191a',outline='#455354')
+        d.rounded_rectangle((36,87,1404,336),radius=6,fill=BLACK,outline='#1e3737')
+        text(d,(48,445),'C L E A N U P',18,anchor='lm',bold=True)
+        text(d,(690,450),'F R E Q U E N C Y   F O C U S',17,anchor='lm',bold=True)
+        text(d,(514,653),'Detail ↔ Smooth',10,fill=MUTED,anchor='mm')
+        text(d,(1190,664),'Sweep to target',12,fill=MUTED)
+        text(d,(1190,685),'harshness',12,fill=MUTED)
+        text(d,(1190,714),'Restoration only',10,fill=MUTED)
+        text(d,(48,803),'M A S T E R I N G',17,anchor='lm',bold=True)
+        text(d,(1240,855),'8 PRESETS',11,fill=GOLD)
+        text(d,(1240,880),'EQ · COMP · WIDTH · LUFS',10,fill=MUTED)
         return im
 
     def button(self, key, label=None, active=False, enabled=True, focus=False):
@@ -186,12 +173,13 @@ class Renderer:
         # Brushed, radial aluminum with a machined rim. Cached by geometry.
         disc = self.disc(round(r*2))
         im.alpha_composite(disc,(round(cx-r),round(cy-r)))
-        angle = math.radians(135+270*(value-low)/(high-low))
+        fraction=np.log(value/low)/np.log(high/low) if units=='Hz' else (value-low)/(high-low)
+        angle = math.radians(135+270*fraction)
         p1=(cx+(r*.36)*math.cos(angle),cy+(r*.36)*math.sin(angle))
         p2=(cx+(r*.86)*math.cos(angle),cy+(r*.86)*math.sin(angle))
         d.line((*p1,*p2),fill='#171b1b',width=3)
         d.rounded_rectangle((cx-46,119,cx+46,138),radius=2,fill='#070c0d',outline='#3b4547')
-        display = f'{value:.0f}%' if units=='%' else f'{value:+.1f} dB' if abs(value)>.049 else '0.0 dB'
+        display = (f'{value:.0f}%' if units=='%' else f'{value/1000:.2f} kHz' if units=='Hz' and value>=1000 else f'{value:.0f} Hz' if units=='Hz' else f'{value:.2f} oct' if units=='oct' else f'{value:+.1f} dB' if abs(value)>.049 else '0.0 dB')
         text(d,(cx,129),display,12,anchor='mm',bold=True)
         if focus: d.rounded_rectangle((cx-49,116,cx+49,138),radius=3,outline=TEAL)
         return im
@@ -297,6 +285,17 @@ class Renderer:
             im=self._wave_image.copy()
         d=ImageDraw.Draw(im)
         if view=='wave' and state.get('duration',0)>0:
+            duration=state['duration']
+            a,b=state.get('loop_a',0),state.get('loop_b',duration)
+            xa=round(a/duration*(w-1)); xb=round(b/duration*(w-1))
+            if state.get('loop_enabled'):
+                tint=Image.new('RGBA',(w,h),(0,0,0,0))
+                ImageDraw.Draw(tint).rectangle((xa,0,xb,156),fill=(64,210,197,32))
+                im=Image.alpha_composite(im.convert('RGBA'),tint).convert('RGB')
+                d=ImageDraw.Draw(im)
+            for x,label in ((xa,'A'),(xb,'B')):
+                d.line((x,0,x,156),fill=TEAL,width=2)
+                text(d,(min(w-8,max(8,x)),7),label,11,fill=TEAL,anchor='mm',bold=True)
             x=round(np.clip(state.get('position',0)/state['duration'],0,1)*(w-1))
             d.line((x,0,x,157),fill='#e4ebe8',width=1)
         if view!='reduction':
@@ -344,25 +343,39 @@ class Renderer:
         return im
 
     def footer(self,state):
-        _,_,w,h=self.footer_rect
-        im=Image.new('RGB',(w,h),'#15191a')
-        d=ImageDraw.Draw(im)
-        def stamp(seconds): return f'{int(seconds)//60:02}:{int(seconds)%60:02}'
-        duration=state.get('duration',0)
-        position=state.get('position',0)
-        text(d,(130,14),f'{stamp(position)} / {stamp(duration)}',21,anchor='mm')
-        d.rounded_rectangle((0,36,260,42),radius=3,fill='#05090a',outline='#353e40')
-        if duration:
-            d.rounded_rectangle((1,37,max(3,position/duration*259),41),radius=2,fill=TEAL)
-        d.line((287,0,287,48),fill='#4c5355')
-        text(d,(414,10),'SYSTEM AUDIO OUTPUT',10,fill=MUTED,anchor='mm')
-        text(d,(414,33),state.get('format','NO AUDIO LOADED'),12,anchor='mm')
-        d.line((547,0,547,48),fill='#4c5355')
-        text(d,(628,10),'NR LOAD',10,fill=MUTED,anchor='mm')
-        text(d,(628,34),f'{state.get("load",0):.0f}%',18,anchor='mm')
-        d.line((712,0,712,48),fill='#4c5355')
-        text(d,(810,10),'BUFFER MISSES',10,fill=MUTED,anchor='mm')
-        text(d,(810,34),str(state.get('misses',0)),18,fill='#ed674f' if state.get('misses',0) else WHITE,anchor='mm')
+        im=Image.new('RGB',(970,55),'#15191a'); d=ImageDraw.Draw(im)
+        def stamp(v): return f'{int(v)//60:02}:{v%60:06.3f}'
+        text(d,(125,28),stamp(state.get('position',0))+' / '+stamp(state.get('duration',0)),16,anchor='mm')
+        text(d,(455,28),'A  '+stamp(state.get('loop_a',0)),12,anchor='mm',fill=TEAL)
+        text(d,(720,28),'B  '+stamp(state.get('loop_b',0)),12,anchor='mm',fill=TEAL)
+        return im
+
+    def focus_plot(self,state):
+        from realtime import focus_weights
+        _,_,w,h=self.focus_rect
+        im=Image.new('RGB',(w,h),BLACK);d=ImageDraw.Draw(im)
+        freq=np.geomspace(20,24000,w)
+        for db in (0,30,60,90):
+            y=5+db/90*85
+            d.line((0,y,w,y),fill='#243a38')
+        for f in (100,500,1000,5000,10000,20000):
+            x=np.log(f/20)/np.log(1200)*(w-1)
+            d.line((x,0,x,92),fill='#243a38')
+            text(d,(x,99),f'{f/1000:g}k' if f>=1000 else str(f),9,fill=MUTED,anchor='ma')
+        snapshot=state.get('monitor')
+        if snapshot is not None:
+            # RMS magnitude across channels avoids cancellation of anti-phase stereo.
+            z=np.fft.rfft(snapshot*np.hanning(len(snapshot))[:,None],axis=0)
+            magnitude=np.sqrt(np.mean(np.abs(z)**2,axis=1))*2/max(1,np.hanning(len(snapshot)).sum())
+            db=np.interp(freq,np.fft.rfftfreq(len(snapshot),1/state.get('sr',48000)),20*np.log10(np.maximum(magnitude,1e-9)))
+            d.line([(i,5+np.clip(-v,0,90)/90*85) for i,v in enumerate(db)],fill=MUTED)
+        if state.get('focus',False):
+            weights=focus_weights(freq,state.get('frequency',6300),state.get('width',1.5))
+            pts=[(i,90-float(v)*80) for i,v in enumerate(weights)]
+            d.line(pts,fill=TEAL,width=2)
+            text(d,(w-8,12),'TARGET WEIGHT',9,fill=TEAL,anchor='ra')
+        else:
+            text(d,(w-8,12),'FULL RANGE',9,fill=TEAL,anchor='ra')
         return im
 
     def screen_labels(self,state):
@@ -391,15 +404,22 @@ class Renderer:
     def parts(self,state):
         yield 'plot',self.plot_rect[:2],self.plot(state)
         yield 'meters',self.meter_rect[:2],self.meters(state)
-        yield 'footer',self.footer_rect[:2],self.footer(state)
-        yield 'filename',(479,94),self.screen_labels(state)
-        yield 'legend',(48,328),self.legend(state)
-        yield 'status',(45,714),self.status(state)
-        banner=Image.new('RGB',(565,22),'#15191a')
-        text(ImageDraw.Draw(banner),(0,11),state.get('mastering_status',
-            'MASTERING OFF — choose a preset or press A/B to enable'),10,
-            fill=GOLD,anchor='lm')
-        yield 'mastering_status',(663,404),banner
+        footer=self.footer(state)
+        yield 'time',(310,354),footer.crop((0,0,250,55))
+        yield 'loop_a',(690,354),footer.crop((380,0,530,55))
+        yield 'loop_b',(955,354),footer.crop((645,0,795,55))
+        yield 'filename',(635,94),self.screen_labels(state)
+        yield 'focus_plot',self.focus_rect[:2],self.focus_plot(state)
+        banner=Image.new('RGB',(1100,21),'#15191a')
+        text(ImageDraw.Draw(banner),(0,10),shorten(state.get('mastering_status','MASTERING OFF'),130),10,fill=GOLD,anchor='lm')
+        yield 'mastering_status',(280,781),banner
+        levels=Image.new('RGB',(245,22),'#15191a')
+        text(ImageDraw.Draw(levels),(0,11),state.get('loudness_status','SESSION LUFS —'),8,fill=TEAL,anchor='lm')
+        yield 'loudness_status',(48,920),levels
+        status=Image.new('RGB',(1340,20),'#181d1f')
+        label=f'{state.get("format","NO AUDIO")}   ·   NR LOAD {state.get("load",0):.0f}%   ·   MISSES {state.get("misses",0)}   |   '+state.get('status','Load a WAV or MP3 to begin.')
+        text(ImageDraw.Draw(status),(0,10),shorten(label,190),10,fill=MUTED,anchor='lm')
+        yield 'status',(48,995),status
 
     def preview(self,state,values=None,buttons=None):
         im=self.base.copy().convert('RGBA')

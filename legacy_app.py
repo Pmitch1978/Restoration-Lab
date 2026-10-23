@@ -1,6 +1,6 @@
 #!/usr/bin/env python3
 """Suno restoration proof of concept — run: python app.py"""
-from dataclasses import replace
+from dataclasses import replace, asdict
 from pathlib import Path
 import json
 import queue
@@ -107,7 +107,7 @@ class App:
         self.reduction_canvas.pack(fill='x',pady=5)
         self.history = []
         ttk.Label(outer,text='Reduction history, 0–12 dB: teal = NR RMS level decrease; gold = compression.').pack(anchor='w')
-        ttk.Label(outer, text='Limiter: −1 dBFS sample peak. True peak / LUFS are not verified in this build.').pack(anchor='w')
+        ttk.Label(outer, text='Playback: sample ceiling. Export: measured LUFS and 4× peak estimate. Use app.py for mastering settings.').pack(anchor='w')
         ttk.Label(outer, textvariable=self.status, wraplength=980).pack(anchor='w', pady=8)
         self.update_controls()
 
@@ -164,8 +164,11 @@ class App:
         def work():
             try:
                 x, sr = read_audio(filename)
+                import soundfile as sf
+                source_subtype=sf.info(filename).subtype
                 engine = RealtimeRestoration(x, sr, use_drift,
                     lambda message: self.events.put(('status', message)))
+                engine.source_subtype=source_subtype
                 self.events.put(('loaded', (filename, engine)))
             except Exception as exc:
                 self.events.put(('error', str(exc)))
@@ -189,10 +192,19 @@ class App:
                 return
             raw = raw[:n]
             mastered = self.mastering.process(raw, c)
-            output = engine.source[start:start+n]-raw if c.removed else mastered
+            original=self.transport.last_original[:n]
+            output = original-raw if c.removed else original if c.preview_original else mastered
+            preview_key=(c.preview_original,c.removed)
+            old=getattr(self,'previous_preview',preview_key)
+            if old != preview_key:
+                previous=original-raw if old[1] else original if old[0] else mastered
+                ramp=np.linspace(0,1,n)[:,None]
+                output=previous*(1-ramp)+output*ramp
+            self.previous_preview=preview_key
             # Device safety clamp only; exports use the selected chain instead.
             outdata[:n] = np.clip(output, -.999, .999)
             self.last_meters = dict(self.mastering.meters)
+            self.last_meters.update(self.mastering.loudness.process(outdata[:n]))
             self.position = self.transport.position
             if self.transport.eof:
                 self.playing = False
@@ -211,7 +223,7 @@ class App:
             self.position = 0
         self.shutdown_stream()
         self.mastering = Mastering(self.restoration.sr, self.restoration.source.shape[1])
-        self.transport = RealtimeTransport(self.restoration,lambda:self.controls,self.position)
+        self.transport = RealtimeTransport(self.restoration,lambda:self.controls,self.position,loop=getattr(self,"loop_range",None))
         self.transport.start()
         self.play_requested = True
         self.status.set('Preparing first playback block…')
@@ -296,14 +308,15 @@ class App:
         self.shutdown_stream()
         self.set_busy(True)
         engine, controls = self.restoration, self.controls
+        subtype=getattr(self,"export_subtype","PCM_24")
         def work():
             temporary = Path(filename).with_name(Path(filename).name+'.partial.wav')
             try:
-                report = export_audio(engine, temporary, controls)
+                report = export_audio(engine, temporary, controls,subtype=subtype)
                 temporary.replace(filename)
                 sidecar = Path(filename).with_suffix('.report.json')
                 sidecar.write_text(json.dumps({'restoration': engine.report,
-                    'controls': controls.__dict__, 'export': report}, indent=2))
+                    'controls': asdict(controls), 'export': report}, indent=2))
                 self.events.put(('exported', filename))
             except Exception as exc:
                 temporary.unlink(missing_ok=True)

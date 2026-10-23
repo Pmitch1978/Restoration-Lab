@@ -1,14 +1,9 @@
-# Restoration Lab Version 1.5
+# Restoration Lab 3.0 — start here
 
-1. Extract this ZIP into a fresh folder on your Mac.
-2. Double-click **Start.command** to try the new GUI in Python.
-3. To make a standalone Mac app, double-click **Build Mac App.command**.
-4. After **SUCCESS**, drag **Restoration Lab.app** from the Finder window into Applications.
+1. Extract the ZIP. Keep your earlier application while testing this version.
+2. On Mac, try `Start.command`, then run `Build Mac App.command`. Run `Create GitHub Release.command` after a successful build to prepare release assets.
+3. On Windows, run `Build-Windows.ps1`, or use the included GitHub Actions workflow. Upload the folder contents at repository root, including `.github`.
+4. Open **MASTERING STUDIO** for EQ, compression, stereo width and loudness. Enable MASTERING ON to hear it.
+5. The USER GUIDE button explains every module. The portable copy is `assets/User_Guide.html`.
 
-See **GUI_README.md** for controls, meters, build checks and limitations. Keep the previous working version until you have tried this one.
-
-Version 1.5 adds the embedded waveform icon, version title, and **USER GUIDE** button. The manual opens inside the app and is also available as **assets/User_Guide.html**. Rebuild and replace the installed `.app` to update its Finder/Dock icon; running Start.command alone does not replace an installed app.
-
-This is the new metal GUI with the established audio engine. It includes source and a Mac builder; it is not a precompiled `.app`.
-
-To distribute on GitHub after building, run **Create GitHub Release.command**. It creates an unsigned `.pkg` installer, app ZIP and checksums. See **DISTRIBUTING.md**. **README.md** is the short GitHub-facing introduction.
+This package contains source and build tooling, not prebuilt Mac/Windows binaries. Native build scripts run automated checks and GUI self-tests before packaging.

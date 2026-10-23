@@ -1,0 +1,8 @@
+SELF-TEST: MP3 decoder
+SELF-TEST: Tk interpreter
+SELF-TEST: restoration engine
+SELF-TEST: audio runtime
+SELF-TEST: application interface
+SELF-TEST: complete
+PASS: Version 3.0 GUI/manual, controls, resize, four NR modes, Grain, Frequency Focus, loops, comparison, MP3, PCM24/float WAV, PortAudio.
+PASS: three metal Studio tabs, native smoke check, scaled canvas clicks, mono switch, EQ node dragging, preset save/load, resize and reopen.

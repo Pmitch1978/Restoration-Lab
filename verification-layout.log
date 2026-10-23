@@ -1,0 +1,8 @@
+test_crossovers_clamp_to_valid_spacing (test_studio_ui.MetalStudioTests.test_crossovers_clamp_to_valid_spacing) ... ok
+test_numeric_edit_routes_to_eq_and_stereo (test_studio_ui.MetalStudioTests.test_numeric_edit_routes_to_eq_and_stereo) ... ok
+test_three_pages_and_shared_controls (test_studio_ui.MetalStudioTests.test_three_pages_and_shared_controls) ... ok
+
+----------------------------------------------------------------------
+Ran 3 tests in 0.309s
+
+OK

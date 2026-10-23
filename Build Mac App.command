@@ -41,6 +41,7 @@ fi
 build_python="$runtime_dir/bin/python"
 "$build_python" -c 'import sys, platform, tkinter; print("Building with",sys.executable,platform.machine(),"Tk",tkinter.TkVersion)'
 "$build_python" -m pip install -r requirements.txt 'pyinstaller>=6.11,<7' 'pyinstaller-hooks-contrib>=2024.10'
+"$build_python" -m unittest discover -v
 "$build_python" mac_entry.py --self-test
 
 # Unique destinations preserve previous builds and never overwrite an installed app.

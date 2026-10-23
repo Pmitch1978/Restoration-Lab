@@ -1,0 +1,5 @@
+{
+  "host_mastering_seconds_for_8_seconds": 0.8076521770001364,
+  "realtime_fraction": 0.10095652212501705,
+  "note": "Linux synthetic DSP benchmark; not an M1 or audio-device test."
+}

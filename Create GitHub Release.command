@@ -8,7 +8,7 @@ if [ "$(uname -s)" != Darwin ]; then
   echo "Create the macOS installer on your Mac."
   exit 1
 fi
-for command_path in /usr/bin/pkgbuild /usr/bin/pkgutil /usr/bin/ditto /usr/bin/codesign /usr/bin/shasum /usr/bin/lipo /usr/libexec/PlistBuddy; do
+for command_path in /usr/bin/pkgbuild /usr/sbin/pkgutil /usr/bin/ditto /usr/bin/codesign /usr/bin/shasum /usr/bin/lipo /usr/libexec/PlistBuddy; do
   if [ ! -x "$command_path" ]; then
     echo "Required Mac tool is missing: $command_path"
     echo "Install Apple's Command Line Tools, then retry."
@@ -36,8 +36,8 @@ fi
 app_path="$(cd "$(dirname "$app_path")" && pwd)/Restoration Lab.app"
 app_version="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleShortVersionString' "$app_path/Contents/Info.plist")"
 app_id="$(/usr/libexec/PlistBuddy -c 'Print :CFBundleIdentifier' "$app_path/Contents/Info.plist")"
-if [ "$app_id" != com.patrickmitchell.restorationlab ] || [ "$app_version" != 1.5.0 ]; then
-  echo "Expected Restoration Lab version 1.5.0. Rebuild from the current source."
+if [ "$app_id" != com.patrickmitchell.restorationlab ] || [ "$app_version" != 3.0.0 ]; then
+  echo "Expected Restoration Lab version 3.0.0. Rebuild from the current source."
   exit 1
 fi
 executable="$app_path/Contents/MacOS/Restoration Lab"
@@ -71,7 +71,7 @@ zip_name="$base_name.zip"
 /usr/bin/ditto -c -k --sequesterRsrc --keepParent "$app_path" "$release_dir/$zip_name"
 
 # Inspect the payload without installing anything on the build Mac.
-/usr/bin/pkgutil --payload-files "$release_dir/$pkg_name" > "$work_dir/installed-files.txt"
+/usr/sbin/pkgutil --payload-files "$release_dir/$pkg_name" > "$work_dir/installed-files.txt"
 if ! /usr/bin/grep -Fq 'Restoration Lab.app/Contents/MacOS/Restoration Lab' "$work_dir/installed-files.txt"; then
   echo "Installer payload verification failed."
   exit 1

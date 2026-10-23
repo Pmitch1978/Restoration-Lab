@@ -15,5 +15,5 @@ if ($LASTEXITCODE -ne 0) { throw 'Packaging failed.' }
 & '.\dist\Restoration Lab\Restoration Lab.exe' --self-test
 if ($LASTEXITCODE -ne 0) { throw 'Packaged application self-test failed.' }
 & $python -m pip freeze | Set-Content '.\dist\Restoration Lab\build-dependencies.txt'
-Compress-Archive -Path '.\dist\Restoration Lab' -DestinationPath '.\Restoration-Lab-1.5-Windows-x64.zip' -Force
-Write-Host 'Built: Restoration-Lab-1.5-Windows-x64.zip'
+Compress-Archive -Path '.\dist\Restoration Lab' -DestinationPath '.\Restoration-Lab-3.0-Windows-x64.zip' -Force
+Write-Host 'Built: Restoration-Lab-3.0-Windows-x64.zip'

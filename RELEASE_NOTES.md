@@ -1,15 +1,13 @@
-# Restoration Lab v1.5.0
+# Version 3.0.0
 
-Mastering usability update: selecting a preset enables mastering, A/B states explicitly say Mastering On/Off, and an effective EQ/ratio status row makes the active processing visible. Added Bright, Vocal, Acoustic, Deep Bass and Smooth (eight presets total). Existing Natural/Warm/Punchy settings and NR algorithms are preserved. Manual updated; MP3 support retained.
+Adds a Mastering Studio with six-band parametric EQ, four-band stereo-linked compression and adjustable mid/side stereo width. Each compressor band now exposes attack, release, soft knee and makeup gain alongside threshold/ratio, solo and dynamics bypass.
 
-Initial packaged preview release: black metal interface, waveform app icon, adaptive STFT/Wavelet/Both processing, mastering/EQ, A/B and bypass, PCM24 export, searchable in-app user guide.
+Adds bass-width protection, correlation monitoring, mono audition and user mastering preset save/load. Solo and mono audition are monitor-only and excluded from export. Width changes use a fixed 10 ms transition; compression/makeup bypass transitions use 5 ms smoothing.
 
-Download the installer or app ZIP for the architecture shown in the filename. Quit any older copy before installing. The PKG installs to Applications; the ZIP is the drag-and-drop alternative. No Python installation is required for either binary download.
+Retains restoration, upward drift correction, Grain, frequency focus, loops, WAV/MP3 input, PCM24/float WAV export, LUFS targeting and estimated true-peak verification. Updates guide, version labels, native self-tests and build artifact names.
 
-Experimental build: installer unsigned, app locally signed but not Apple-notarized. Other Macs and older macOS versions require testing. File processing only. No true-peak/LUFS certification. Monitoring-only matching and removed-signal listening are excluded from exports.
+Compression ratios now follow the displayed band ratio scaled toward 1:1 by Strength. Tone preset selection no longer multiplies compression ratios. Default compression is consequently gentler than some Version 2 preset combinations. The compressor enable switch now bypasses dynamics while retaining the crossover/tone path. Older versions do not read Version 3 presets.
 
-Verify downloads with `shasum -a 256 -c SHA256SUMS.txt` after downloading all files listed in the checksum file. If you downloaded just the app/installer, compare its individual `shasum -a 256` result with the corresponding checksum entry.
+## Approved metal Studio interface
 
-## MP3 input update
-
-LOAD AUDIO now accepts WAV and MP3. MP3 decodes to float64 with the existing audio library, preserving the decoded sample rate and channels. Existing 44.1/48 kHz, mono/stereo restrictions apply. Export remains PCM24 WAV. The builder checks MP3 decoding both before packaging and inside the built app. Rebuild to update an installed app.
+Replaces the earlier form-style settings window with a scaled canvas interface using the main app’s actual brushed-metal materials and machined knob artwork. Consolidates the Studio into EQ, Compressor and Stereo & Loudness tabs. Adds EQ node and crossover dragging, monitor spectrum and vectorscope, live channel/band meters and a shared preset/playback toolbar. Mastering audio behavior and export routing remain the Version 3 chain.

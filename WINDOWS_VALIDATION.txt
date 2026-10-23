@@ -1,4 +1,1 @@
-Source validation: Python compilation passed.
-Existing regression suite: all 17 tests passed on Linux/Python 3.12.
-Windows/Python 3.13 executable build and physical audio playback: pending Windows runner/tester.
-Restoration and mastering engine files are unchanged from the supplied package.
+Restoration Lab 3.0: source checks passed on Linux; no Windows binary was built or executed here. Build-Windows.ps1 runs the test suite and packaged self-test on Windows. See VERIFICATION.md.

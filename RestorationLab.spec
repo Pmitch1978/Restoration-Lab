@@ -7,7 +7,7 @@ datas = [(str(assets/'RestorationLab.png'),'assets'),
          (str(assets/'User_Guide.html'),'assets'),
          (str(Path(SPECPATH)/'test_assets'/'decoder_check.mp3'),'test_assets')]
 binaries, hiddenimports = [], []
-for package in ('sounddevice', '_sounddevice_data', 'soundfile', '_soundfile_data', 'pywt'):
+for package in ('sounddevice', '_sounddevice_data', 'soundfile', '_soundfile_data', 'pywt', 'pyloudnorm'):
     d, b, h = collect_all(package)
     datas += d
     binaries += b
@@ -25,7 +25,7 @@ coll = COLLECT(exe, a.binaries, a.datas, strip=False, upx=False,
                name='Restoration Lab')
 app = BUNDLE(coll, name='Restoration Lab.app', icon=str(assets/'RestorationLab.icns'),
              bundle_identifier='com.patrickmitchell.restorationlab',
-             info_plist={'CFBundleShortVersionString': '1.5.0',
-                         'CFBundleVersion': '15',
+             info_plist={'CFBundleShortVersionString': '3.0.0',
+                         'CFBundleVersion': '30',
                          'NSHighResolutionCapable': True,
                          'NSPrincipalClass': 'NSApplication'})

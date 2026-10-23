@@ -16,15 +16,23 @@ def smoke_check():
     from reference_engine import Controls
     from audio_input import read_audio
 
+    def checkpoint(message):
+        print(f'SELF-TEST: {message}', flush=True)
+
+    checkpoint('MP3 decoder')
     mp3, mp3_rate = read_audio(Path(__file__).resolve().parent/'test_assets'/'decoder_check.mp3')
     assert mp3_rate == 44100 and mp3.shape == (11025, 2)
     assert np.isfinite(mp3).all() and np.max(np.abs(mp3)) > .01
 
+    # Keep one Tcl/Tk interpreter for the whole smoke test.  Creating a second
+    # Tk application after destroying the first can crash some macOS Tk builds
+    # with SIGBUS ("Bus error: 10") instead of raising a Python exception.
+    checkpoint('Tk interpreter')
     root = tk.Tk()
     root.withdraw()
     root.update()
-    root.destroy()
     # Exercise compiled numerical extensions and bundled libsndfile/PortAudio.
+    checkpoint('restoration engine')
     sr = 48000
     t = np.arange(12000, dtype=np.float64) / sr
     source = np.column_stack([0.1*np.sin(2*np.pi*440*t)]*2)
@@ -38,13 +46,14 @@ def smoke_check():
         sf.write(path, result, sr, subtype='PCM_24')
         audio, rate = sf.read(path, always_2d=True)
         assert rate == sr and audio.shape == source.shape
+    checkpoint('audio runtime')
     sd.get_portaudio_version()
     # Construct the real interface, exercise controls and resize it, then close.
+    checkpoint('application interface')
     from app import App
-    root = tk.Tk()
     app = App(root)
     root.update()
-    assert root.title() == 'Restoration Lab Version 1.5'
+    assert root.title() == 'Restoration Lab Version 3.0'
     from manual import open_manual
     guide = open_manual(root)
     root.update()
@@ -63,6 +72,20 @@ def smoke_check():
     app.select_preset('Bright')
     root.update()
     assert app.controls.master and app.controls.preset == 'Bright'
+    app.mastering_settings()
+    root.update()
+    assert app.mastering_window.winfo_exists()
+    app.vars['target_lufs'].set(-16)
+    app.vars['low_ratio'].set(3)
+    assert app.controls.target_lufs == -16 and app.controls.low_ratio == 3
+    app.vars['lowmid_attack'].set(35)
+    app.vars['stereo_width'].set(1.25)
+    app.eq_vars[2]['gain'].set(-2)
+    app.advanced_flags['mono_audition'].set(True)
+    assert app.controls.lowmid_attack == 35 and app.controls.stereo_width == 1.25
+    assert app.controls.eq_bands[2].gain == -2 and app.controls.mono_audition
+    app.advanced_flags['mono_audition'].set(False)
+    app.mastering_window.destroy()
     app.select_preset('Natural')
     assert app.controls.mode == 'Both' and app.controls.master
     app.vars['nr_strength'].set(50)
@@ -73,6 +96,33 @@ def smoke_check():
     assert app.controls.mode == 'Off' and not app.controls.master
     app.bypass.set(False)
     assert app.controls.mode == 'Both' and app.controls.master
+    app.vars['grain'].set(80)
+    app.vars['frequency'].set(5200)
+    app.focus_band.set(True)
+    assert app.controls.grain == .8 and app.controls.focus
+    app.loop_a,app.loop_b=1000,8000
+    app.toggle_loop()
+    assert app.loop_range == (1000,8000)
+    app.clear_loop()
+    assert app.loop_range is None
+    app.select_monitor(True)
+    assert app.controls.preview_original
+    app.select_monitor(False)
+    app.focus_band.set(False)
+    from realtime import export_audio
+    with TemporaryDirectory() as folder:
+        path=Path(folder)/'float.wav'
+        export_audio(engine,path,Controls(mode='Off'),subtype='FLOAT')
+        assert sf.info(path).subtype == 'FLOAT'
+    from types import SimpleNamespace
+    master_source=np.tile(source,(4,1))
+    master_engine=SimpleNamespace(source=master_source,sr=sr,
+        get=lambda a,b,c:master_source[a:b].copy())
+    with TemporaryDirectory() as folder:
+        path=Path(folder)/'master-check.wav'
+        result=export_audio(master_engine,path,Controls(mode='Off',master=True,target_lufs=-18))
+        assert abs(result['integrated_lufs']+18)<.2
+        assert result['true_peak_dbtp'] <= -1 and result['ceiling_enforced']
     app.set_view('spectrum')
     app.set_view('reduction')
     app.set_view('wave')
@@ -80,8 +130,10 @@ def smoke_check():
     root.update()
     app.layout()
     root.update()
+    for callback in root.tk.call('after','info'):root.after_cancel(callback)
     app.close()
-    print('PASS: Version 1.5 GUI/manual, controls, resize, four NR modes, MP3 decode, PCM24 WAV, PortAudio.')
+    checkpoint('complete')
+    print('PASS: Version 3.0 GUI/manual, controls, resize, four NR modes, Grain, Frequency Focus, loops, comparison, MP3, PCM24/float WAV, PortAudio.')
 
 
 def main():

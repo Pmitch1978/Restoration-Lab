@@ -1,27 +1,36 @@
-# Restoration Lab 1.5
+# Restoration Lab 3.0
 
-Adaptive WAV/MP3 restoration and real-time playback with STFT, wavelet or combined noise reduction, mastering presets, EQ, A/B comparison and export.
+Local stereo restoration and mastering for WAV and MP3 recordings, including AI-generated music.
 
-## Install on Mac
+## New in Version 3
 
-Download the package matching your Mac from **Releases**. `arm64` is for Apple Silicon (M1 and later); `x86_64` is for Intel. Only download architectures actually provided in the release.
+- Six-band parametric EQ: bell, shelves, high/low-pass filters; frequency, gain, Q, response graph and individual enable.
+- Four-band linked compressor: adjustable crossovers, threshold, ratio, attack, release, soft knee and makeup; band dynamics bypass and monitor solo.
+- Mid/side stereo width from 0–200%, existing bass-width protection, correlation readout and mono audition.
+- Full-song LUFS targeting, adjustable peak ceiling and measured WAV export reports.
+- Mastering Studio matching the main app’s metal finish, silver rotary controls and teal screens, with exactly three tabs: EQ, Compressor, Stereo & Loudness.
+- Interactive EQ nodes and crossover markers, live band meters, stereo vectorscope and shared preset/transport controls.
+- Save/load user mastering presets from every tab.
+- Existing STFT/wavelet restoration, Grain, frequency focus, drift correction, looping and comparison.
 
-Quit an older copy, open the `.pkg` installer and follow the prompts. It installs **Restoration Lab.app** in Applications. Alternatively, extract the app ZIP and drag the complete `.app` into Applications. Python is included; no separate dependency installation is needed.
+Stereo input stays stereo. Source sample rate, full sample count and alignment are retained. Mono input stays mono. Output is 24-bit PCM or 32-bit float WAV. Monitoring choices, including band solo and mono audition, do not affect exports.
 
-This is an experimental, non-notarized release. The installer is unsigned, and macOS may block downloaded files. Review the source and release information before deciding whether to allow it in **System Settings → Privacy & Security**. Compatibility with other Macs/older macOS versions is not yet established.
+## Run and build
 
-## Use
+**Mac:** extract the folder and run `Start.command` to try the source application. Run `Build Mac App.command` to make a bundled app; then `Create GitHub Release.command` to make local release assets. These scripts preserve earlier build folders. Build on the intended Mac architecture.
 
-Choose your output in macOS Sound settings, load a mono/stereo WAV or MP3 at 44.1 or 48 kHz, then press Play. Compare Off, STFT, Wavelet and Both. Enable mastering with A/B, adjust the controls and export a full-length PCM24 WAV. Click **USER GUIDE** for the complete manual.
+**Windows:** upload this folder's contents to repository root, including `.github/workflows/windows-build.yml`, and run **Build Windows** under GitHub Actions. Download **Restoration-Lab-3.0-Windows-x64**; the ZIP inside is the Windows release asset. Alternatively run `Build-Windows.ps1` on Windows with Python 3.13 x64.
 
-File processing only; no live audio input or VST support. Meters are not certified LUFS/true-peak meters. Level Match and Listen to Removed affect monitoring only.
+**Development:** Python 3.10–3.14 with Tk 8.6+, `python3 -m pip install -r requirements.txt`, then `python3 app.py`. Run `python3 -m unittest discover -v` for tests. Native build scripts also run the actual bundled GUI self-test.
 
-## Run or build from source
+## Mastering workflow
 
-Use Python 3.13 from python.org (includes Tk), then double-click **Start.command**. To bundle the app, run **Build Mac App.command**. To create GitHub release assets afterward, run **Create GitHub Release.command**. See **DISTRIBUTING.md** for the release steps.
+Load a track, adjust restoration and compare. Enable mastering, open **MASTERING STUDIO**, set EQ, compression and width, then choose output loudness. Use Level Match for comparisons and mono audition to check width. Export measures the complete processed WAV and reports achieved LUFS and estimated true peak. A target can be missed within the selected limiting budget.
 
-### MP3 input update
+Start with restrained processing. The tool attenuates estimated noise; it cannot guarantee restoration of missing content or remove every artifact. Crossovers are minimum-phase, EQ uses IIR filters, and peak metering uses a 4× estimate. There is no dither. Keep working earlier releases while evaluating 3.0.
 
-LOAD AUDIO accepts WAV or MP3 (mono/stereo, 44.1 or 48 kHz). MP3 is decoded to floating-point audio before restoration; output remains PCM24 WAV. WAV is the preferred source when available. Decoding does not recover detail lost to MP3 compression. No FFmpeg installation is needed.
+This is a source and build kit. Native macOS/Windows installers must be built and listening-tested on their target platforms. See `VERIFICATION.md` and the in-app guide for details.
 
-To update your installed Mac app, extract this package and run **Build Mac App.command**, then install the newly built app. Start.command runs the updated source directly.
+## Studio controls
+
+Drag or wheel knobs; Shift gives finer steps. Double-click to type, right-click to reset. Drag EQ nodes to adjust frequency/gain and wheel over them for Q. Drag crossover markers to change band boundaries. Tab and arrow keys provide keyboard adjustment. TRUE PEAK is the last completed export for the current source; playback meters show sample peaks.

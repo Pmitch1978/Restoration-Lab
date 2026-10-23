@@ -72,6 +72,7 @@ class RealtimeTests(unittest.TestCase):
                 if count < 8192:
                     np.testing.assert_array_equal(out[:n],self.source[start+count:start+count+n])
                 count+=n
+                if n: deadline=time.perf_counter()+20
                 if count>32768: current[0]=Controls(mode='Both',wavelet_amount=.5)
                 if count>65536: current[0]=Controls(mode='Wavelet')
             self.assertEqual(count,len(self.source)-start)
